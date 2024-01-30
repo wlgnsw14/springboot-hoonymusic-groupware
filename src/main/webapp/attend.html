@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<style>
+#clock {
+	height: 20%;
+	text-align: center;
+	margin: 0;
+	font-size: 22px;
+	font-weight: 500;
+	margin-bottom:10px;
+}
+
+#date {
+	font-size: 18px;
+	font-family: 'Arial', sans-serif;
+	text-align: center;
+	margin-top: 10px;
+}
+
+
+.mainLeft {
+	box-sizing: border-box;
+	width: 26%;
+	height: 50%;
+}
+
+
+.mainAttend {
+	box-sizing: border-box;
+	height: 183px;
+	margin-bottom: 16px;
+    border-radius: 10px;
+	border: 1px solid #025464;
+    font-family: 'Helvetica', Arial, sans-serif;
+}
+
+
+.attendList {
+	box-sizing: border-box;
+	height: 350px;
+    border-radius: 10px;
+	border: 3px solid #007aff;
+    font-family: 'Helvetica', Arial, sans-serif;
+    overflow: auto;
+   
+}
+
+
+.attendBox {
+	height: 40%;
+}
+
+.attendBox>div {
+	float: left;
+	width: 45.25%;
+	padding: 3% 2% 3% 2%;
+	margin-left:20px;
+}
+
+
+
+.attendBtn {
+border-radius: 5px;
+background-color:025464;
+color:white;
+padding: 5 10;
+border:none;
+width: 100px;
+height: 30px;  
+	cursor: pointer;
+	margin-bottom: 5px;
+	text-align: center;
+	line-height: 30px;
+}
+
+.bottomBox>div {
+	width: 100%;
+	height: 85px;
+}
+
+
+.togle {
+	cursor: pointer;
+	list-style: none;
+}
+</style>
+<body>
+	<div class="mainAttend">
+					<div class="attendBox">
+						<div class="leftBox">
+							<ul>
+								<li><p>근태관리</p></li>
+								<li> <div id="date"></div></li>
+							</ul>
+						</div>
+						<div class="rightBox">
+							<ul>
+								<li class="attendBtn" onclick="attTime('in')">출근</li>
+								<li class="attendBtn" onclick="attTime('out')">퇴근</li>
+							</ul>
+						</div>
+					</div>
+					<div id="clock"></div>
+					<div class="attendBox">
+						<div class="leftBox">
+							<ul>
+								<li>출근 시간</li>
+								<li>퇴근 시간</li>
+							</ul>
+						</div>
+						<div class="rightBox">
+							<ul>
+								<li id="inTime">미등록</li>
+								<li id="outTime">미등록</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+</body>
+<script>
+//출퇴근 시간 출력
+$(document).ready(function() {
+    notiTime();
+});
+
+
+
+//현재 일시 출력
+var currentMonth = new Date().getMonth();
+var currentYear = new Date().getFullYear();
+
+
+function updateClock() {
+    var now = new Date();
+    var hours = now.getHours().toString().padStart(2, '0');
+    var minutes = now.getMinutes().toString().padStart(2, '0');
+    var seconds = now.getSeconds().toString().padStart(2, '0');
+
+    var timeString = hours + ':' + minutes + ':' + seconds;
+    document.getElementById('clock').innerHTML = timeString;
+    
+    var year = now.getFullYear();
+    var month = (now.getMonth() + 1).toString().padStart(2, '0');
+    var day = now.getDate().toString().padStart(2, '0');
+
+    var dateString = year + '/' + month + '/' + day;
+    document.getElementById('date').innerHTML = dateString;
+}
+
+//매 초마다 시계 업데이트
+setInterval(updateClock, 1000);
+// 페이지 로딩 시에도 시계 업데이트
+updateClock();
+
+
+// 출퇴근 버튼
+function attTime(type){
+	var inTimeElement = document.getElementById('inTime');
+	var outTimeElement = document.getElementById('outTime');
+	console.log(inTimeElement);
+	console.log(outTimeElement);
+	if (type === 'in' && inTimeElement.innerText.trim() == '미등록') {
+		attendTime(type);
+        console.log('함수 실행'+inTimeElement.innerText.trim());
+    }else if (type === 'out' && outTimeElement.innerText.trim() == '미등록'){
+    	attendTime(type);
+    }else{
+    	alert('하루에 한번만 가능합니다.');
+    }
+}
+	
+
+function attendTime(type){
+	var currentDate = document.getElementById('date').textContent;
+	 var currentTime = document.getElementById('clock').textContent;
+	console.log("현재 일시 :"+currentDate+" "+currentTime);
+	
+	$.ajax({
+		type:'post',
+		url:'attTime',
+		data:{
+			'attTime':currentTime,
+			'attDate':currentDate,
+			'type':type
+			}, 
+		dataType:'JSON',
+		success: function(data){
+			notiTime();
+			}
+		,error:function(e){
+			console.log(e);
+			
+			}
+		
+		});
+		
+}
+
+function notiTime(){
+	console.log('그만하자');
+	$.ajax({
+		type:'get',
+		url:'notiTime',
+		data:{}, 
+		dataType:'JSON',
+		success: function(data){
+			var inTime = data.att_intime;
+	        var outTime = data.att_outtime;
+			console.log('출근 : '+inTime);	
+			console.log('퇴근 : '+outTime);	
+			
+			if(inTime != null){
+				$('#inTime').text(inTime);
+			}
+			
+			if(outTime != null){
+				$('#outTime').text(outTime);
+			}			
+
+		}
+		,error:function(e){
+			console.log(e);
+			console.log('왜안댐');
+			}	
+		});
+}
+</script>
+</html>

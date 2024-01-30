@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="kr.co.gudi.notification.dao.NotiDAO">
+
+	<select id="notiList" resultType="noti">
+		SELECT n.*, m.name, m.member_position
+			FROM notification n 
+				LEFT OUTER JOIN member m ON n.noti_sender = m.member_no
+			WHERE n.noti_receiver = #{param1} AND (noti_state = '0' OR noti_state = '1')
+					ORDER BY n.noti_no DESC 
+	</select>
+	
+	<select id="notiCount" resultType="int">
+		SELECT count(*) AS noti_count FROM notification 
+			WHERE cast(noti_state as UNSIGNED) = '0' AND noti_receiver = #{param1}
+	</select>
+		
+	<update id="stateUpdate">
+		UPDATE notification SET noti_state = '1'
+			WHERE noti_no = #{param1} 
+	</update>
+			
+	<update id="notiDel">
+		UPDATE notification SET noti_state='2' WHERE noti_no=#{param1}
+	</update>	
+	
+	<delete id="deleteNoti">
+		DELETE FROM notification
+			WHERE DATEDIFF(CURDATE(), noti_date) > 7
+	</delete>
+</mapper>
+
+

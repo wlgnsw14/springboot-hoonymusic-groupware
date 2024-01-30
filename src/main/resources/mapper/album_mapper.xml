@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="kr.co.gudi.resource.dao.AlbumDAO">
+ 	<select id="list" resultType="album">
+		SELECT a.*, t.art_name, m.member_id, m.name, m.member_position, s.albsold_profit, s.albsold_date, 
+			COALESCE(SUM(s.albsold_stock), 0) AS total_albsold_stock FROM album a
+	    		LEFT OUTER JOIN artist t ON t.art_no = a.art_no 
+	    		LEFT OUTER JOIN member m ON m.member_no = a.member_no
+	    		LEFT OUTER JOIN album_sold s ON s.alb_no = a.alb_no 
+			GROUP BY a.alb_no
+			ORDER BY a.alb_no DESC LIMIT 20 OFFSET #{param1}
+	</select> 
+	
+	<select id="totalPage" resultType="int">
+		SELECT CEIL(COUNT(alb_no)/20) AS pages FROM album
+	</select>
+	
+	<select id="totalSearchPage" resultType="int">
+		SELECT CEIL(COUNT(alb_no)/20) AS pages 
+			FROM album a
+				LEFT OUTER JOIN artist t ON a.art_no = t.art_no
+			WHERE t.art_name LIKE CONCAT('%',#{param1},'%') OR a.alb_name LIKE CONCAT('%',#{param1},'%')
+	</select>
+	
+	<select id="detail" resultType="album">
+		SELECT a.*, t.art_name, m.member_id, m.name, p.albpro_round, p.albpro_price
+			FROM album a
+				LEFT OUTER JOIN artist t ON a.art_no = t.art_no
+				LEFT OUTER JOIN member m ON a.member_no = m.member_no
+				LEFT OUTER JOIN album_pro p ON p.alb_no = a.alb_no 
+		WHERE a.alb_no = #{param1} AND (p.albpro_round IS NULL 
+			OR p.albpro_round = (SELECT MAX(albpro_round) FROM album_pro WHERE alb_no = #{param1}))
+	</select>
+	
+	<select id="searchList" resultType="album">
+		SELECT 
+		a.*, t.art_name, m.member_id, m.name, m.member_position, s.albsold_profit, s.albsold_date, 
+			COALESCE(SUM(s.albsold_stock), 0) AS total_albsold_stock FROM album a
+	    		LEFT OUTER JOIN artist t ON t.art_no = a.art_no 
+	    		LEFT OUTER JOIN member m ON m.member_no = a.member_no
+	    		LEFT OUTER JOIN album_sold s ON s.alb_no = a.alb_no 
+    		WHERE t.art_name LIKE CONCAT('%',#{param1},'%') OR a.alb_name LIKE CONCAT('%',#{param1},'%')
+				GROUP BY a.alb_no
+				ORDER BY a.alb_no DESC LIMIT 20 OFFSET #{param2}
+	</select>
+	
+	<select id="chartData">
+		SELECT albsold_amount, albsold_stock FROM album_sold WHERE albsold_round = 
+	        <choose>
+	            <!-- 해당 페이지의 albsold_round를 MAX(albpro_round) 로 초기화 -->
+	            <when test="param2 == null">
+	                (SELECT MAX(albpro_round) FROM album_pro WHERE alb_no = #{param1})
+	            </when>
+	            <!-- option 값이 있을 때는 albsold_round를 param2로 설정 -->
+	            <otherwise>
+	                #{param2}
+	            </otherwise>
+	        </choose>
+        AND alb_no = #{param1}
+	</select>
+	
+	<insert id="fileUpload">
+		INSERT INTO file(file_location, file_unique_no, file_oriname, file_newname, file_size, file_state) 
+			VALUES("l", #{param3}, #{param1},#{param2},#{param4},"0")
+	</insert>
+
+	<select id="getFile" resultType="album">
+		SELECT file_oriname, file_newname FROM file 
+			WHERE file_unique_no=#{param1} and file_location = "l"
+	</select>
+
+</mapper>

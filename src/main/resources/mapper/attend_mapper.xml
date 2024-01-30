@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="kr.co.gudi.attend.dao.AttendDAO">
+
+<insert id="inTime">
+	INSERT into attend(member_no,att_intime)
+	values(#{member_no},#{attTime})
+</insert>
+
+<update id="outTime">
+	UPDATE attend 
+	set att_outtime=#{attTime}
+	where member_no =#{member_no} and att_date=#{attDate}
+</update>
+
+<select id="notiTime" resultType="attend">
+	select att_intime,att_outtime from attend
+		where member_no=#{param1} and att_date = #{param2}
+</select>
+
+<select id="getHours">
+    SELECT TIMEDIFF( att_outtime,att_intime) FROM attend
+    WHERE member_no =#{member_no} and att_date=#{attDate}
+</select>
+
+<update id="workHours">
+	UPDATE attend 
+	set work_hours=#{work_hours}
+	where member_no =#{member_no} and att_date=#{attDate}
+</update>
+
+<select id="timeTable">
+	SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(work_hours))) FROM attend
+		WHERE att_date BETWEEN #{start_date} AND #{end_date} and member_no=#{member_no}
+</select>
+
+<select id="totalM">
+	SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(work_hours))) FROM attend
+		WHERE att_date BETWEEN #{param1} AND #{param2} and member_no=#{param3}
+</select>
+
+<select id="overTime">		
+	SELECT att_outtime FROM attend
+	WHERE att_date BETWEEN #{param1}  AND #{param2}
+		AND att_outtime >'18:00:00' AND member_no = #{param3}			
+</select>
+
+	<select id="selectDate" resultType="attend">
+		select * from attend
+			where member_no=#{param3} and att_date BETWEEN #{param1} AND #{param2}
+	</select>
+
+<select id="calLeave" resultType="map">
+	select * from member
+		where member_no=#{param1}
+</select>
+
+<select id="useList" resultType="attend">
+	SELECT * FROM attend      
+     where member_no=#{param1} and off_check ='Y'
+     and DATE_FORMAT(att_date , '%Y') =#{param2}
+</select>
+</mapper>

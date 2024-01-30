@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+<mapper namespace="kr.co.gudi.reserve.dao.ReserveDAO">
+
+	<insert id="reserveget" parameterType="Hashmap">
+	
+	insert into reserv (member_no,res_member, res_name,res_start,res_end,res_content,res_state,res_memberno)values(3,#{member_name},#{title},#{start},#{end},#{text},"2",#{member_no})
+	
+	</insert>
+	
+	<select id="reservnogetlist" resultType="reserv">
+
+		SELECT * from reserv where (res_state = "2"and res_memberno = #{myno}) or (res_state="3"and res_memberno = #{myno})
+		ORDER BY res_no DESC LIMIT 5 OFFSET #{offset};
+	</select>
+	
+	<select id="reservnomaxpage" resultType="float">
+		SELECT (count(res_no)/#{pagePerNum}) from reserv 
+		where (res_state = "2"and res_memberno = #{myno}) or (res_state="3"and res_memberno = #{myno})
+	</select>
+	
+	<select id="reservlist" resultType="reserv">
+
+		SELECT * from reserv 
+		where (res_state = "0"and res_memberno = #{myno})
+		ORDER BY res_no DESC LIMIT 5 OFFSET #{offset};
+	</select>
+	
+	<select id="reservmaxpage" resultType="int">
+
+		SELECT (count(res_no)/#{pagePerNum}) from reserv 
+		where (res_state = "0"and res_memberno = #{myno})
+		
+	</select>
+	
+	<select id="reservdetail" resultType="reserv">
+	
+	Select * from reserv where res_no = #{param1}
+	
+	</select>
+	
+	
+	<select id="reservAdmin" resultType="reserv">
+
+		SELECT * from reserv 
+		where (res_state = "2"and res_memberno = #{myno}) or (res_state="3"and res_memberno = #{myno})
+		ORDER BY res_no DESC LIMIT 5 OFFSET #{offset};
+	</select>
+	
+	<select id="reservAdminmaxpage" resultType="float">
+		SELECT (count(res_no)/#{pagePerNum}) from reserv where (res_state = "2"and res_memberno = #{myno}) or (res_state="3"and res_memberno = #{myno})
+	</select>
+	
+	<update id="reservOk" parameterType="int">
+	
+		update reserv set res_state = "0" where res_no = #{res_no}
+	
+	</update>
+	
+	<update id="reservNo" parameterType="int">
+	
+		update reserv set res_state = "4" where res_no = #{res_no}
+	
+	</update>
+	
+	<insert id="reservOk_his" >
+	
+	insert into reserv_history (member_no,res_no,reshis_state,res_member)values(#{member_no},#{res_no},"0",#{member_name})
+	
+	</insert>
+	
+	<insert id="reservNo_his" >
+	
+	insert into reserv_history (member_no,res_no,reshis_reason,reshis_state,res_member)values(#{member_no},#{res_no},#{res_content},"0",#{member_name})
+	
+	</insert>
+
+</mapper>

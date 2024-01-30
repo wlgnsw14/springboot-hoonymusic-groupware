@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="kr.co.gudi.schedule.dao.ScheduleDAO">
+
+
+	<insert id="write" parameterType="Map">
+      INSERT INTO schedule(content,sch_depart,title,start,end,member_no,sch_state) 
+      	VALUES(#{content},#{sch_depart},#{title},#{start},#{end},#{member_no},#{sch_state})
+   </insert>
+   
+   <insert id="nWrite" parameterType="map">
+	INSERT INTO notification (noti_sender, noti_receiver, noti_content, noti_locate)
+		SELECT #{member_no}, member_no, '5', 's'
+			FROM member where member_state='재직'			
+   </insert>
+   
+   <insert id="dWrite" parameterType="map">
+	INSERT INTO notification (noti_sender, noti_receiver, noti_content, noti_locate,noti_depart_no)
+		SELECT #{member_no}, m.member_no, '6', 's',  #{sch_depart}
+		FROM member m left outer join department d on d.depart_no = m.depart_no 
+			where d.depart_p_no = #{sch_depart}	
+   </insert>
+
+   
+   <select id="list"  resultType="sch">
+   		select * from schedule  		
+   			where sch_state=#{sch_state} and member_no=#{member_no}   		
+   </select>
+   
+   <select id="allList" resultType="sch">
+   		select * from schedule  		
+   			where sch_state=#{sch_state}
+   </select>
+   
+   <select id="dptList" resultType="sch">
+   		select * from schedule  		
+   			where sch_state=#{sch_state} and sch_depart=#{sch_depart}
+   </select>
+     
+
+   <select id="schDetail" resultType="sch">
+   		select * from schedule
+   			where sch_no = #{param1}
+   </select>
+   
+   <update id="delSch">
+   		update schedule
+   			set sch_state = '1'
+   			where sch_no = #{param1}
+   </update>
+   
+  
+
+</mapper>

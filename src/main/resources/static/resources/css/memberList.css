@@ -1,0 +1,23 @@
+@charset "UTF-8";
+#common_list_form{padding-left:15%;}
+        #common_list_form .big_title{padding: 50px 50px;}
+        #common_list_form .sub_title{padding: 20px 50px;}
+        #common_list_form .list_form{position:relative;}
+        #common_list_form .list_form .list_title ul{width: 100%; height: 32px;}
+        #common_list_form .list_form .list_title ul li{ float: left; border-top: 1px solid #999; border-bottom: 1px solid #222; padding:5px 0 5px 10px; box-sizing: border-box;}
+        #common_list_form .list_form .list_title ul li:first-child{width: 10%; padding-left: 50px; }
+        #common_list_form .list_form .list_title ul li:nth-child(2){width: 15%;}
+        #common_list_form .list_form .list_title ul li:nth-child(3){width: 15%;}
+        #common_list_form .list_form .list_title ul li:nth-child(4){width: 15%;}
+        #common_list_form .list_form .list_title ul li:nth-child(5){width: 15%;}
+        #common_list_form .list_form .list_title ul li:last-child{width: 30%;}
+        #common_list_form .list_form .list_content ul{width:100%; height: 30px;}
+        #common_list_form .list_form .list_content ul li{float:left; padding:5px 0 5px 10px; box-sizing: border-box;}
+        #common_list_form .list_form .list_content ul li:first-child{width: 10%; padding-left: 50px; }
+        #common_list_form .list_form .list_content ul li:nth-child(2){width: 15%;}
+        #common_list_form .list_form .list_content ul li:nth-child(3){width: 15%;}
+        #common_list_form .list_form .list_content ul li:nth-child(4){width: 15%;}
+        #common_list_form .list_form .list_content ul li:nth-child(5){width: 15%;}
+        #common_list_form .list_form .list_content ul li:last-child{width: 30%;}
+        #common_list_form .list_form .list_content ul li a:hover{text-decoration: underline;}
+        #common_list_form .list_form .list_content ul:hover{background-color: #eee;}

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="kr.co.gudi.board.dao.BoardDAO">
+	
+	<select id="list" resultType="bbs">
+		SELECT * FROM board 
+		WHERE board_depart = 
+    (SELECT depart_name FROM department
+    WHERE depart_no = (SELECT depart_no FROM member
+       WHERE member_no = #{param2}))
+		ORDER BY board_no DESC LIMIT 10 OFFSET #{param1}
+	</select>
+	
+	<select id="listD" resultType="bbs">
+		SELECT * FROM board 
+		WHERE board_depart = '전사' 
+			ORDER BY board_no DESC LIMIT 10 OFFSET #{param1}
+	</select>
+	
+	<select id="totalPage" resultType="int">
+		SELECT CEIL(COUNT(board_no)/10) AS pages FROM board
+		WHERE board_depart = 
+			 (SELECT depart_name FROM department
+    			WHERE depart_no = (SELECT depart_no FROM member
+       				WHERE member_no = #{param1}))
+	</select>
+	 
+	<select id="totalPageD" resultType="int">
+		SELECT CEIL(COUNT(board_no)/10) AS pages FROM board
+			WHERE board_depart = '전사' 
+	</select>
+	 
+	<!-- 
+	<select id="list" resultType="bbs">
+  		SELECT * FROM board
+	</select>
+	 -->
+	<!-- 
+	<insert id="write" parameterType="bbs">
+  		INSERT INTO board(board_title, board_depart, board_content)
+  			VALUES(#{board_title}, #{board_depart}, #{board_content})
+  	</insert>
+	 -->
+	
+	<insert 
+		useGeneratedKeys="true"
+		keyColumn="board_no"
+		keyProperty="board_no"
+	id="write" parameterType="bbs">
+  		INSERT INTO board(board_title, board_depart, board_content,member_no)
+			VALUES(#{board_title}, #{board_depart}, #{board_content},#{member_no})
+  	</insert>
+  	
+  	<insert 
+		useGeneratedKeys="true"
+		keyColumn="board_no"
+		keyProperty="board_no"
+	id="writeD" parameterType="bbs">
+  		INSERT INTO board(board_title, board_depart, board_content,member_no)
+			VALUES(#{board_title}, '전사', #{board_content},#{member_no})
+  	</insert>
+  	
+  	
+	<insert id="writePhoto">
+		INSERT INTO file(file_unique_no, file_oriname, file_newname, file_location, file_size)
+			VALUES(#{param1},#{param2},#{param3}, 'b', #{param4})
+	</insert>
+	
+	<select id="getPhoto" resultType="bbs">
+		SELECT * FROM file WHERE file_unique_no = #{param1} AND file_location='b'
+	</select>
+	
+	<update id="modifyImage">
+		UPDATE file 
+			SET file_oriname=#{file_oriname},file_newname=#{file_newname},file_size=#{size}
+				WHERE file_location=#{file_location} AND file_unique_no=#{board_no}
+	</update>
+	
+	
+	
+	<select id="detail">
+  		SELECT * FROM board 
+  			WHERE board_no=#{param1}
+  	</select>
+  	
+  	<select id="detailD">
+  		SELECT * FROM board 
+  			WHERE board_no=#{param1}
+  	</select>
+   
+   <update id="bHit">
+   		UPDATE board SET bHit=bHit+1 WHERE board_no=#{param1}
+  	</update>
+  	
+  	<delete id="del">
+  		DELETE FROM board
+  			WHERE board_no=#{param1};
+  	</delete>
+  	
+  	<delete id="delD">
+  		DELETE FROM board
+  			WHERE board_no=#{param1}
+  	</delete>
+  
+  	<update id="modify">
+   		UPDATE board SET 
+   			board_title=#{board_title}, board_content=#{board_content}, bHit=bHit-1 
+   				WHERE board_no=#{board_no} 
+   	</update>
+   	
+   	<update id="modifyD">
+   		UPDATE board SET 
+   			board_title=#{board_title}, board_content=#{board_content}, bHit=bHit-1 
+   				WHERE board_no=#{board_no} 
+   	</update>
+   	
+   
+   	<select id="boardSearch" resultType="bbs">
+   		SELECT * FROM board WHERE 
+   			board_depart = 
+    (SELECT depart_name FROM department
+    WHERE depart_no = (SELECT depart_no FROM member
+       WHERE member_no =#{param3})) and
+   			(board_title LIKE CONCAT('%',#{param1},'%') 
+   			OR
+   			board_depart LIKE CONCAT('%',#{param1},'%'))
+   			ORDER BY board_no DESC LIMIT 10 OFFSET #{param2}
+   	</select>
+   	
+   	 <select id="boardSearchD" resultType="bbs">
+   		SELECT * FROM board WHERE 
+   			board_depart = '전사' AND
+   			(board_title LIKE CONCAT('%',#{param1},'%') 
+   			OR
+   			board_depart LIKE CONCAT('%',#{param1},'%'))
+   			ORDER BY board_no DESC LIMIT 10 OFFSET #{param2}
+   	</select>
+   	 
+</mapper>

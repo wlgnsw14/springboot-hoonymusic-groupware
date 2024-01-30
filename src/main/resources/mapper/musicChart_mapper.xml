@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="kr.co.gudi.marketing.dao.MusicChartDAO">
+
+	<!-- artist 테이블의 art_name 이랑 비교해서 같은지 확인해서 같은 이름만 가져오기? -->
+	<select id="musicArtistCall" parameterType="list">	
+		SELECT art_name FROM artist WHERE 
+			<foreach collection="list" item="item">
+				 #{item}
+			</foreach>				
+			LIKE CONCAT('%', art_name, '%')
+	</select>	
+	
+</mapper>

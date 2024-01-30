@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.gudi.approval.dao.ApprovalDAO">
+
+	<select id="draftsmanInfo" resultType="approval">
+		SELECT m.name, m.member_position, d.depart_name, f.file_newname FROM member m
+			JOIN department d ON m.depart_no = d.depart_no
+			LEFT JOIN file f ON m.member_no = f.file_unique_no
+				WHERE f.file_location = "p" AND m.member_no = #{param1}
+	</select>
+
+	<select id="departmentsInfo" resultType="approval">
+		SELECT depart_no, depart_p_no, depart_name FROM department
+			WHERE depart_state = 0;
+	</select>
+	
+	<select id="membersInfo" resultType="approval">
+		SELECT m.member_no, m.name, m.member_position, d.depart_name, d.depart_no FROM member m
+			JOIN department d ON m.depart_no = d.depart_no
+				WHERE m.member_state = '재직';
+	</select>
+	
+	<select id="setApprover" resultType="approval">
+		SELECT m.member_no, m.name, m.member_position, d.depart_name, f.file_newname FROM member m
+			JOIN department d ON m.depart_no = d.depart_no
+			LEFT JOIN file f ON m.member_no = f.file_unique_no
+				WHERE f.file_location = "p" AND m.member_no = #{param1}
+	</select>
+	
+	<insert 
+		useGeneratedKeys="true"
+         keyColumn="approval_no"
+         keyProperty="approval_no"
+		id="commWrite" parameterType="approval">
+		INSERT INTO approval(draftmember_no, currmember_no, approval_title, approval_content, form_no) 
+			VALUES(#{draftmember_no}, #{first_approver}, #{approval_title}, #{approval_content}, #{form_no})
+	</insert>
+	
+	<insert id="saveFile">
+		INSERT INTO file(file_location,file_unique_no,file_oriname,file_newname,file_size)
+			VALUES(#{file_location},#{approval_no},#{oriFileName},#{newFileName},#{size})
+	</insert>
+	
+	<insert id="draftWrite" parameterType="map">
+		INSERT INTO draft_appr(approval_no, coper_team, effec_date)
+			VALUES(#{approval_no} ,#{team_name},#{date})
+	</insert>
+	
+	<insert id="firstApprover" parameterType="map">
+		INSERT INTO approver(member_no, approval_no, approval_order, sortation)
+			VALUES(#{approver1}, #{approval_no}, 1, 0)
+	</insert>
+	
+	<insert id="secondApprover" parameterType="map">
+		INSERT INTO approver(member_no, approval_no, approval_order, sortation)
+			VALUES(#{approver2}, #{approval_no}, 2, 0)
+	</insert>
+	
+	<insert id="thirdApprover" parameterType="map">
+		INSERT INTO approver(member_no, approval_no, approval_order, sortation)
+			VALUES(#{approver3}, #{approval_no}, 3, 0)
+	</insert>
+	
+	<insert id="observer">
+		INSERT INTO approver(member_no, approval_no, sortation)
+			VALUES(#{param1}, #{param2}, 1)
+	</insert>
+	
+	<select id="draftList" resultType="approval">
+		SELECT a.approval_no, a.approval_start, a.approval_title, a.approval_end, a.approval_state, a.document_state, a.form_no, m.name
+			FROM approval a
+			JOIN member m ON a.currmember_no = m.member_no
+				WHERE a.document_state != 3
+					AND a.draftmember_no = #{member_no}
+					<if test="searchType == 1 and searchInfo != null">
+					    AND m.name LIKE CONCAT('%', #{searchInfo}, '%')
+					</if>
+					<if test="searchType == 2 and searchInfo != null">
+						AND a.approval_title LIKE CONCAT('%',#{searchInfo},'%')
+					</if>
+						ORDER BY a.approval_no DESC LIMIT #{vpn} OFFSET #{offset}
+	</select>
+	
+	<select id="apprList" resultType="approval">
+		SELECT a.approval_no, a.approval_start, a.approval_title, a.approval_end, a.approval_state, a.document_state, a.form_no, m.name
+			FROM approval a
+			JOIN member m ON a.draftmember_no = m.member_no
+			JOIN approver ap ON a.approval_no = ap.approval_no
+				WHERE a.document_state != 3 AND ap.sortation = 0 AND ap.member_no = #{member_no}
+					<if test="searchType == 1 and searchInfo != null">
+					    AND m.name LIKE CONCAT('%', #{searchInfo}, '%')
+					</if>
+					<if test="searchType == 2 and searchInfo != null">
+						AND a.approval_title LIKE CONCAT('%',#{searchInfo},'%')
+					</if>
+						ORDER BY ap.approver_no DESC LIMIT #{vpn} OFFSET #{offset}
+	</select>
+	
+	<select id="refList" resultType="approval">
+		SELECT a.approval_no, a.approval_start, a.approval_title, a.approval_end, a.approval_state, a.document_state, a.form_no, m.name
+			FROM approval a
+			JOIN member m ON a.draftmember_no = m.member_no
+			JOIN approver ap ON a.approval_no = ap.approval_no
+				WHERE a.document_state != 3 AND ap.sortation = 1 AND ap.member_no = #{member_no}
+					<if test="searchType == 1 and searchInfo != null">
+					    AND m.name LIKE CONCAT('%', #{searchInfo}, '%')
+					</if>
+					<if test="searchType == 2 and searchInfo != null">
+						AND a.approval_title LIKE CONCAT('%',#{searchInfo},'%')
+					</if>
+						ORDER BY ap.approver_no DESC LIMIT #{vpn} OFFSET #{offset}
+	</select>
+	
+	<select id="draftTotalPage" resultType="int">
+		SELECT CEIL(COUNT(a.approval_no)/#{vpn}) AS pages FROM approval a
+			JOIN member m ON a.currmember_no = m.member_no
+				WHERE a.document_state != 3
+					AND a.draftmember_no = #{member_no}
+					<if test="searchType == 1 and searchInfo != null">
+						AND m.name LIKE CONCAT('%',#{searchInfo},'%')
+					</if>
+					<if test="searchType == 2 and searchInfo != null">
+						AND a.approval_title LIKE CONCAT('%',#{searchInfo},'%')
+					</if>
+	</select>
+	
+	<select id="apprTotalPage" resultType="int">
+		SELECT CEIL(COUNT(a.approval_no)/#{vpn}) AS pages FROM approval a
+			JOIN member m ON a.draftmember_no = m.member_no
+			JOIN approver ap ON a.approval_no = ap.approval_no
+				WHERE a.document_state != 3 AND ap.sortation = 0 AND ap.member_no = #{member_no}
+				<if test="searchType == 1 and searchInfo != null">
+					AND m.name LIKE CONCAT('%',#{searchInfo},'%')
+				</if>
+				<if test="searchType == 2 and searchInfo != null">
+					AND a.approval_title LIKE CONCAT('%',#{searchInfo},'%')
+				</if>
+	</select>
+	
+	<select id="refTotalPage" resultType="int">
+		SELECT CEIL(COUNT(a.approval_no)/#{vpn}) AS pages FROM approval a
+			JOIN member m ON a.draftmember_no = m.member_no
+			JOIN approver ap ON a.approval_no = ap.approval_no
+				WHERE a.document_state != 3 AND ap.sortation = 1 AND ap.member_no = #{member_no}
+				<if test="searchType == 1 and searchInfo != null">
+					AND m.name LIKE CONCAT('%',#{searchInfo},'%')
+				</if>
+				<if test="searchType == 2 and searchInfo != null">
+					AND a.approval_title LIKE CONCAT('%',#{searchInfo},'%')
+				</if>
+	</select>
+	
+	<select id="draftDocDetailInfo" resultType="approval">
+		SELECT a.*, d.depart_name, m.name, m.member_position
+			FROM approval a
+			JOIN member m ON a.draftmember_no = m.member_no
+			JOIN department d ON m.depart_no = d.depart_no
+				WHERE a.approval_no = #{param1}
+	</select>
+	
+	<select id="fileInfo" resultType="approval">
+		SELECT file_oriname, file_newname FROM file 
+			WHERE file_unique_no=#{param1} and file_location = "a"
+	</select>
+	
+	<select id="apprInfo" resultType="approval">
+		SELECT m.member_position, m.name, ap.approval_order, a.approval_state, ah.processing_result, ah.reason, ah.processing_date, d.depart_name
+			FROM approval a
+			JOIN approver ap ON a.approval_no = ap.approval_no
+			JOIN member m ON ap.member_no = m.member_no
+			JOIN department d ON m.depart_no = d.depart_no
+			LEFT JOIN approval_history ah ON ap.approver_no = ah.approver_no
+				WHERE ap.sortation = 0
+				AND a.approval_no = #{param1}
+	</select>
+	
+	<select id="refInfo" resultType="approval">
+		SELECT m.member_position, m.name, ap.approval_order, a.approval_state, ah.processing_result, ah.reason, ah.processing_date, d.depart_name
+			FROM approval a
+			JOIN approver ap ON a.approval_no = ap.approval_no
+			JOIN member m ON ap.member_no = m.member_no
+			JOIN department d ON m.depart_no = d.depart_no
+			LEFT JOIN approval_history ah ON ap.approver_no = ah.approver_no
+				WHERE ap.sortation = 1
+				AND a.approval_no = #{param1}
+	</select>
+	
+	<select id="dratfVarification" resultType="int">
+		SELECT count(*) FROM approval a 
+			JOIN member m ON a.draftmember_no = m.member_no 
+				WHERE m.member_no = #{param2} AND a.approval_no = #{param1}
+	</select>
+	
+	<select id="apprVarification" resultType="int">
+		SELECT ap.sortation FROM approver ap
+			JOIN member m ON ap.member_no = m.member_no
+			JOIN approval a ON a.approval_no = ap.approval_no
+				WHERE m.member_no = #{param2} AND a.approval_no = #{param1}
+	</select>
+	
+	<select id="apprOrder" resultType="int">
+		SELECT ap.approval_order FROM approver ap
+			JOIN member m ON ap.member_no = m.member_no
+			JOIN approval a ON a.approval_no = ap.approval_no
+				WHERE ap.sortation = 0 AND m.member_no = #{param2} AND a.approval_no = #{param1}
+	</select>
+	
+	<select id="getapproverNo" resultType="int">
+		SELECT approver_no fROM approver a
+			WHERE member_no = #{param1} AND approval_no = #{param2}
+	</select>
+	
+	<insert id="commApprove">
+		INSERT INTO approval_history(approver_no, processing_result, reason)
+			VALUES(#{param1}, 1, #{param2})
+	</insert>
+	
+	<select id="getApprCnt" resultType="int">
+		SELECT MAX(approval_order) FROM approver
+			WHERE approval_no = #{param1}
+	</select>
+	
+	<select id="getMyApprNum" resultType="int">
+		SELECT approval_order FROM approver
+			WHERE member_no = #{param1} AND approval_no = #{param2}
+	</select>
+	
+	<update id="apprToss">
+		UPDATE approval SET approval_state = approval_state + 1
+			WHERE approval_no = #{param1}
+	</update>
+	
+	<update id="apprFinish">
+		UPDATE approval SET approval_state = approval_state + 1, document_state = 1, approval_end = CURRENT_DATE()
+			WHERE approval_no = #{param1};
+	</update>
+	
+	<insert id="apprReturn">
+		INSERT INTO approval_history(approver_no, processing_result, reason)
+			VALUES(#{param1}, 2, #{param2})
+	</insert>
+	
+	<update id="ReturnFinish">
+		UPDATE approval SET approval_state = 4, document_state = 2, approval_end = CURRENT_DATE()
+			WHERE approval_no = #{param1};
+	</update>
+	
+	<update id="withdrawl">
+		UPDATE approval SET document_state = 3
+			WHERE approval_no = #{param1}
+	</update>
+</mapper>

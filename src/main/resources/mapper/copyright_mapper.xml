@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+<mapper namespace="kr.co.gudi.resource.dao.CopyrightDAO">
+
+
+ 
+ 	<update id="resourceCopyrightdelete" parameterType="String">
+ 	
+ 	update cr_history set per_state="1" where cr_no =#{param1} and per_price = #{param2}
+ 	
+ 	</update>
+	
+	
+	<select id="copyrightlist" resultType="cr">
+
+		SELECT *
+		FROM cr_manage
+		WHERE cr_state = 0
+		<choose>
+			<when test="searchtag=='cr'">
+			AND cr_no = 
+			</when>
+		    <when test="searchtag=='name'">
+		    AND cr_namae = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{param1}
+		</if>
+	ORDER BY cr_regdate DESC LIMIT 5 OFFSET #{param3}
+	</select>
+	
+	
+	
+	
+	<select id="maxpage" resultType="int">
+		SELECT (count(cr_no)/#{pagePerNum})
+		FROM cr_manage
+		WHERE cr_state = 0
+		<choose>
+			<when test="searchtag=='cr'">
+			AND cr_no = 
+			</when>
+		    <when test="searchtag=='name'">
+		    AND cr_namae = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{search}
+		</if>
+		
+	</select>
+	
+	
+	
+		<select id="copyrightnolist" resultType="cr">
+
+		SELECT *
+		FROM cr_manage
+		WHERE cr_state = 1
+		<choose>
+			<when test="searchtag=='cr'">
+			AND cr_no = 
+			</when>
+		    <when test="searchtag=='name'">
+		    AND cr_namae = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{param1}
+		</if>
+	ORDER BY cr_regdate DESC LIMIT 5 OFFSET #{param3}
+	</select>
+	
+	
+	
+	
+	<select id="nomaxpage" resultType="int">
+		SELECT (count(cr_no)/#{pagePerNum})
+		FROM cr_manage
+		WHERE cr_state = 0
+		<choose>
+			<when test="searchtag=='cr'">
+			AND cr_no = 
+			</when>
+		    <when test="searchtag=='name'">
+		    AND cr_namae = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{search}
+		</if>
+		
+	</select>
+	
+	
+	
+	
+	
+	
+
+	
+	<select id="detaildata" resultType="Map">
+	
+	SELECT * 
+	FROM cr_manage
+	WHERE cr_no = #{param1}
+	
+	</select>
+	
+	<insert id="resourceCopyrightregister" parameterType="String">
+	
+	INSERT into cr_history (cr_no,member_no,per_price,per_date,per_member,cr_namae,per_state)values(#{no},2,${price},#{date},#{per_member},#{namae},"0");
+	
+	</insert>
+
+
+
+	
+	<insert 			
+			useGeneratedKeys="true"
+			keyColumn="cr_no"
+			keyProperty="cr_no"
+			id="copyrightregister" parameterType="cr">
+	
+		INSERT into cr_manage values(#{cr_no},#{member_no},#{cr_name},#{cr_member},#{cr_price},curdate(),curdate(),curdate(),"2",#{cr_namae});
+	
+	</insert>
+	
+		<select id="resourcecopyrightgetlist" resultType="cr">
+
+		SELECT *
+		FROM cr_history
+		WHERE per_state = "0"
+		<choose>
+			<when test="searchtag=='cr'">
+			AND cr_no = 
+			</when>
+		    <when test="searchtag=='name'">
+		    AND cr_namae = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{param1}
+		</if>
+	ORDER BY per_date DESC LIMIT 5 OFFSET #{param3}
+	</select>
+	
+	
+	
+	
+	<select id="rclmaxpage" resultType="int">
+		SELECT (count(cr_no)/#{pagePerNum})
+		FROM cr_history
+		WHERE per_state = 0
+		<choose>
+			<when test="searchtag=='cr'">
+			AND cr_no = 
+			</when>
+		    <when test="searchtag=='name'">
+		    AND cr_namae = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{search}
+		</if>
+		
+	</select>
+	
+	<insert id="writeFile" parameterType="String">
+	
+	INSERT INTO file (file_location,file_unique_no,file_oriname,file_newname,file_size,file_state)values("f",#{idx},#{oriFileName},#{newFileName},#{kb},"0")
+	
+	</insert>
+	
+	<select id="depttlist" resultType="cr">
+	
+	SELECT m.member_no, d.depart_no, m.name, m.member_position from member m inner join department d where m.member_no = d.member_no
+	
+	</select>
+	
+	
+	<insert 			
+			useGeneratedKeys="true"
+			keyColumn="approval_no"
+			keyProperty="approval_no"
+			id="apprcr" parameterType="cr">
+	
+		INSERT into approval
+		(draftmember_no,approval_title,approval_content,approval_start,approval_state,document_state,form_no,currmember_no) 
+		values
+		(19,#{approval_title},#{approval_content},curdate(),0,0,8,#{member_no})
+	
+	</insert>
+
+
+	<insert id="appcon" parameterType="cr">
+	
+	insert into appcr_manage 
+	(approval_no,appcr_name,appcr_price,appcr_regdate,appcr_expdate,appcr_contdate,cr_no,appcr_member)
+	values
+	(#{approval_no},#{cr_name},#{cr_price},curdate(),curdate(),curdate(),#{cr_no},#{cr_member})
+	
+	</insert>
+	
+	
+	<select id="crd2">
+	
+	SELECT appcr_member, appcr_regdate,cr_no from approval a inner join appcr_manage b where a.approval_no = #{appr_no} and b.approval_no= #{appr_no}
+	
+	</select>
+	
+	<update id="okcr">
+	
+	update cr_manage set cr_state = "0" where cr_no = #{param1};
+	
+	</update>
+	
+	<update id="nocr">
+	
+	update cr_manage set cr_state = "1" where cr_no = #{param1};
+	
+	</update>
+	
+	<update id="uprp">
+	
+	update approval set approval_state = 1 where approval_no = #{param1};
+	
+	</update>
+
+</mapper>

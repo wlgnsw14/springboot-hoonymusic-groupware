@@ -1,0 +1,153 @@
+
+<head>
+<meta charset="UTF-8">
+<title>HoonyMusic</title>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+</head>
+<style>
+#common_list_form{padding-left:1%;}
+        #common_list_form .big_title{padding: 2% 2%;}
+        #common_list_form .sub_title{padding: 1% 2%;}
+        #common_list_form .list_form{position:relative;}
+        #common_list_form .list_form .list_title ul{width: 100%; height: 32px;}
+        #common_list_form .list_form .list_title ul li{ float: left; border-top: 1px solid #999; border-bottom: 1px solid #222; padding:1% 0 1% 2%; box-sizing: border-box;}
+        #common_list_form .list_form .list_title ul li:first-child{width: 10%; padding-left: 2%; }
+        #common_list_form .list_form .list_title ul li:nth-child(2){width: 35%; }
+        #common_list_form .list_form .list_title ul li:nth-child(3){width: 20%;}
+        #common_list_form .list_form .list_title ul li:nth-child(4){width: 20%;}
+        #common_list_form .list_form .list_title ul li:last-child{width: 15%;}
+        #common_list_form .list_form .list_content ul{width:100%; height: 5%;}
+        #common_list_form .list_form .list_content ul li{float:left; padding:1% 0 1% 2%; box-sizing: border-box;}
+        #common_list_form .list_form .list_content ul li:first-child{width: 10%; padding-left: 2%; }
+        #common_list_form .list_form .list_content ul li:nth-child(2){width: 35%;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;  max-width: 300px; }
+        #common_list_form .list_form .list_content ul li:nth-child(3){width: 20%;}
+        #common_list_form .list_form .list_content ul li:nth-child(4){width: 20%;}
+        #common_list_form .list_form .list_content ul li:last-child{width: 15%;}
+        /* #common_list_form .list_form .list_content ul li a:hover{text-decoration: underline;} */
+       /*  #common_list_form .list_form .list_content ul:hover{background-color: #eee;} */
+
+	.searchbox {
+	        text-align:center; 
+	        padding-top: 200px; 
+	        height:20px;
+	    }
+	
+	    .searchbox h5 {
+	        margin-bottom: 0; 
+	       
+	    }
+	  .searchText{
+	  	padding-top:30px;
+	  } 
+	    
+    </style>
+<body>
+  <!-- -------------------------------------------list_form start------------------------------------------ -->
+  	
+    <section id="common_list_form">
+	<h2 class="big_title">공지사항</h2>
+        <div class="allpadding" style="padding-left: 3%;padding-right: 3%;">
+
+	
+	        <div class="list_form">
+	            <ul>
+	                <li class="list_title">
+	                    <ul>
+	                        <li>글번호</li>
+	                        <li>제목</li>
+	                        <li>작성자</li>
+	                        <li>작성일자</li>
+	                        <li>조회수</li>
+	                    </ul>
+	                </li>
+	                <li class="list_content" id="listD">
+	
+	                </li>
+	            </ul>
+	        </div>
+	     </div>   
+	        
+        <br/>
+        <!------- 검색 ------->
+        <div class="searchbox" >
+			<h5><input type="text" id="board_name" onkeydown="handleKeyDown(event)"/>
+		<input type="button" value="검색" onclick="listCall('1')" /></h5>
+		</div>
+        
+   <!--      <div id="paging" class="pagingBox">
+				플러그인 사용	(twbsPagination)	- 이렇게 사용하라고 tutorial 에서 제공함
+			<div class="container">
+				<nav aria-label="Page navigation" style="text-align: center">
+					<ul class="pagination" id="pagination"></ul>
+				</nav>
+			</div>
+		</div> -->
+		
+    </section>
+    <!-- -------------------------------------------list_form end------------------------------------------ -->
+</body>
+<script>
+
+
+	var showPage = 1;
+	
+	listCall(showPage);
+	
+	
+	
+	function listCall(page){
+		console.log("ajax시작");
+		$.ajax({
+			type:'get',
+			url:'listD',
+			data:{
+				 'page': page,
+				 'board_name': $('#board_name').val()
+			},
+			dataType:'json', // 받는 타입
+			success:function(data){
+				console.log(data);
+				console.log("------listCall-----");
+				drawList(data);	
+			},
+			error:function(e){
+				console.log(e);
+			}
+		});
+		
+	}
+	
+	function drawList(listD){
+		var content = '';
+		listD.listD.forEach(function(item, idx){
+			content += '<ul>';
+			content += '<li>'+item.board_no+'</li>';
+			content+='<li><a href="boardDetailD?board_no='+item.board_no+'">'+item.board_title+'</a></li>';
+			content += '<li>'+item.board_depart+'</li>';
+			content += '<li>'+item.board_date+'</li>';
+			content += '<li>'+item.bHit+'</li>';			
+			content += '</ul>';
+		});
+		$('#listD').empty(); 
+		$('#listD').append(content);
+		
+		
+
+	}
+	
+	
+	
+	function handleKeyDown(event) {
+	    // 엔터 키의 keyCode는 13
+	    if (event.keyCode === 13) {
+	        // 엔터 키를 눌렀을 때 실행할 검색 함수 호출
+	        search();
+	    }
+	}
+	
+
+
+</script>
+</html>

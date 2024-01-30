@@ -1,0 +1,55 @@
+/* 글꼴 noto-sans , Gmarget-sans */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@font-face {
+    font-family: 'GmarketSansBold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'GmarketSansLight';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+/* common css */
+*{margin:0; padding:0;}
+li{list-style: none;}
+a{text-decoration: none;}
+img{border:none; display: block;}
+body, header, section, footer, div, ul, li, p, a, span, input, textarea, h2, h3, h4, h5, h6, option, button{font-family: 'Noto Sans KR', sans-serif; color: #222; font-size: 14px;}
+h1{font-family: 'GmarketSansMedium'; color:#222;}
+
+/* nav css */
+#nav{position:fixed; width:15%; height:100%; box-shadow: 0 0 3px 0.5px rgb(228, 228, 228); background-color: #fff; overflow: auto; border-right: 1px solid #ccc; box-sizing: border-box;}
+#nav .nav_inner{padding-top: 40px;}
+#nav .logo{padding: 0 0 30px 40px;}
+#nav .logo a{color:#222; font-size:20px;}
+#nav .gnb ul{display: none;}
+#nav .gnb li{padding:10px 0 10px 40px; font-size:14px; font-family: 'GmarketSansMedium', sans-serif; color:#888; letter-spacing: 0.5px; word-spacing: -2px;}
+#nav .gnb li.dep2{padding-left:50px;}
+#nav .gnb li.dep3{padding-left:60px;}
+#nav .gnb a:hover li{color:#222; background-color: #eee;}
+#nav .gnb li.active{color:#222; background-color: #eee;}
+#nav .gnb a li{position:relative;}
+#nav .gnb a li .arrow{position:absolute; right:30px; top:12px;}
+#nav .gnb a li .arrow svg{width:100%; transition:0.3s;}
+
+/* util css */
+#util{position:fixed; right:0; height: 80px; z-index: 9999;}
+#util .util_inner{position:relative; top:30px; right:50px; width:195px; height: 55px;}
+#util .util_inner li{width: 55px; height: 55px; border-radius: 25px; background-color: #fff; float:left; margin-right:15px; cursor: pointer; overflow: hidden; box-shadow: 1px 1px 3px 1px #ddd;}
+#util .util_inner li:last-child{margin-right:0;}
+#util .util_inner li svg{position:relative; top:15px; left:15px;}
+#util .util_inner li img{width:100%;}
+
+/* music box css */
+#bottom_music{position:fixed; width:100%; height:80px; bottom:0; background-color: #eb568e; display: none;}

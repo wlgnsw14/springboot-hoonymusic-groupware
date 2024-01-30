@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+<mapper namespace="kr.co.gudi.artist.dao.ArtistDAO">
+
+
+
+
+
+	<select id="artistlist" resultType="artist">
+
+		SELECT *
+		FROM artist
+		WHERE art_state = "0"
+		<choose>
+			<when test="searchtag=='an'">
+			AND art_name = 
+			</when>
+		    <when test="searchtag=='aa'">
+		    AND art_agency = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{param1}
+		</if>
+	ORDER BY art_no DESC LIMIT 15 OFFSET #{param3}
+	</select>
+	
+	
+	
+	
+	<select id="artmaxpage" resultType="int">
+		SELECT (count(art_no)/#{pagePerNum})
+		FROM artist
+		WHERE art_state = "0"
+		<choose>
+			<when test="searchtag=='an'">
+			AND art_name = 
+			</when>
+		    <when test="searchtag=='aa'">
+		    AND art_agency = 
+		    </when>
+		</choose>
+		<if test="!(search=='')">
+			#{param1}
+		</if>
+		
+	</select>		
+	
+	<insert id="artistget" parameterType="String">
+	
+	insert into artist (art_name,art_agency,art_state)values(#{name},#{agency},"0")
+	
+	</insert>
+	
+	<update id="artistdelete">
+	
+	UPDATE artist SET art_state = "1" WHERE art_no = #{param1}
+	
+	</update>
+	
+	<select id="artistdetail_1" resultType="artist">
+	
+	select * from album a Inner join artist b on a.art_no = #{num} and b.art_no = #{num} ORDER BY alb_no DESC LIMIT 5 OFFSET #{offset}
+	
+	</select>
+	
+	<select id="artistmaxpage_1" resultType="float">
+		
+	SELECT (count(alb_no)/#{pagePerNum}) from album a Inner join artist b on a.art_no = #{num} and b.art_no = #{num}
+		
+	</select>	
+	
+	<select id="artistdetail_2" resultType="artist">
+	
+	select * from song_per c inner join (SELECT song_no, song_name from song a inner join artist b on a.art_no = #{num} and b.art_no = #{num} ) d on c.song_no = d.song_no ORDER BY perSong_no DESC LIMIT 5 OFFSET #{offset}
+	
+	</select>
+	
+	<select id="artistmaxpage_2" resultType="float">
+		
+	SELECT (count(perSong_no)/#{pagePerNum}) from song_per c inner join (SELECT song_no, song_name from song a inner join artist b on a.art_no = #{num} and b.art_no = #{num} ) d on c.song_no = d.song_no
+		
+	</select>	
+	
+	
+</mapper>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- 풀캘린더 라이브러리 -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.js"></script>
+<!-- 날짜 및 시간 처리 라이브러리 -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+<!-- 아래 3줄 modal 관련 -->
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- jQuery -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<style>
+#calendar-container {
+	width: 1300px;
+	padding-left: 20%;
+	padding-top: 100px;
+	box-sizing: border-box;
+}
+
+</style>
+<script>
+
+	var titleData;
+	var startData;
+	var endData;
+	var contentData;
+	document.addEventListener('DOMContentLoaded', function() {
+		var calendarEl = document.getElementById('calendar');
+		var calendar = new FullCalendar.Calendar(calendarEl, {
+			locale : "ko",
+			initialView : 'dayGridMonth',
+			height : 500,
+			customButtons : {
+				myCustomButton : {
+					text : "일정 추가하기",
+					click : function() {
+						// 부트스트랩 모달 열기
+						$("#exampleModal").modal("show");
+					}
+				}
+			},
+
+			headerToolbar : {
+				left : 'prev,next today, myCustomButton',
+				center : 'title',
+				right : 'dayGridMonth,timeGridWeek'
+			}	
+
+		});
+		
+
+		calendar.render();
+		fetchEvents();
+
+		//상태 필터링  
+		$('#depart_select').change(function() {
+			console.log($(this).val());
+			fetchEvents();
+		});
+
+		// db 에서 값을 SELECT해오는거 
+		function fetchEvents() {
+
+			$.ajax({
+				type : 'get',
+				url : 'schedule/list',
+				data : {
+					'sch_state' : $('#depart_select').val()
+				},
+				dataType : 'json',
+				success : function(data) {
+					eventList = data.eventList;
+					// eventList의 각 이벤트 객체에서 sch_no 값을 뽑아내기
+
+					console.log(data.eventList);
+					//풀캘린더 자체내에서 제공하는 일종의 함수? 이벤트추가할수있는거 
+					calendar.removeAllEvents();
+					calendar.addEventSource(eventList);
+				},
+				error : function(xhr, status, error) {
+					console.error('에러 발생:', status, error);
+				}
+			});
+		}
+
+	});
+
+</script>
+
+
+<body style="padding: 30px;">
+	<!-- calendar 태그 -->
+	<div id='calendar-container'>
+		<div class="calFilter">
+			<select id="depart_select" class="depart_select" name="sch_state">
+				<option value="0" selected>내 일정</option>
+				<option value="2">전사 일정</option>
+				<option value="3">부서 일정</option>
+			</select>
+		</div>
+		<div id="calendar"></div>
+	</div>
+	
+</body>
+</html>
