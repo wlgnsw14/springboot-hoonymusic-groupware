@@ -8,6 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MusicChartDAO {
 
-	List<String> musicArtistCall(List<String> artNameArray);
+	List<String> musicArtistCall(List<String> stringArray);
 	
 }

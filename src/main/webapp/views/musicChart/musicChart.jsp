@@ -110,19 +110,20 @@ function drawList(list, artNames){
 
 //------------------------------- 소속 아티스트 불러오기 start ------------------------------------------
 function musicArtistCall(){
-	// ${item.artName} 만 가져와서 배열에 담기 
+// 자바단에서 크롤링해온 아티스트명을 배열로 담아서 처리했다. 
+/* 	// ${item.artName} 만 가져와서 배열에 담기 
 	var artNameArray = [];
 	var artNameElements = document.querySelectorAll('#musicChart li#artName');
  	artNameArray = Array.from(artNameElements).map(function(element) {
 	    return element.textContent.trim(); // 앞, 뒤 공백 제거 
 	}); 
-	console.log(artNameArray); 
+	console.log(artNameArray);  */
 	
  	$.ajax({
 		type:'post',
 		url:'musicArtistCall',
-		data:JSON.stringify({artNameArray:artNameArray}), // JSON 형태로 데이터 보내기 
-		contentType:'application/json',
+		data:{}, // JSON.stringify({artNameArray:artNameArray}), // JSON 형태로 데이터 보내기 
+		//contentType:'application/json',
 		dataType:'JSON',
 		success: function(data){
 			//console.log(data);

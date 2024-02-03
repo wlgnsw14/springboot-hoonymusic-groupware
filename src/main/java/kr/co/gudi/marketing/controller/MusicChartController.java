@@ -38,11 +38,11 @@ public class MusicChartController {
 	
 	@PostMapping(value="/musicArtistCall")
 	@ResponseBody
-	public List<String> musicArtistCall(@RequestBody Map<String, List<String>> jsonData){
-		List<String> artNameArray = jsonData.get("artNameArray");
-		logger.info("Received artist names: {}", artNameArray);
-		
-		return service.musicArtistCall(artNameArray);
+	public List<String> musicArtistCall() throws IOException{
+		// @RequestBody Map<String, List<String>> jsonData
+		//List<String> artNameArray = jsonData.get("artNameArray");
+		//logger.info("Received artist names: {}", artNameArray);
+		return service.musicArtistCall();
 	}
 	
 }
