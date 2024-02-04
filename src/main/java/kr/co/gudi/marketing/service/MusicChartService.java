@@ -59,16 +59,13 @@ public class MusicChartService {
 	        
 	        // 이미지 a 태그 href 에서 숫자만 출력 (앨범 번호) 
 	        Elements albHref = chartList.select("a.image_typeAll");
-	        String albNo="";
-	        for(Element href : albHref) {
-	        	String[] numList = href.attr("href").split("\\D+");
-	            // 분할된 문자열에서 숫자 부분을 연결
-	            for (String num : numList) {
-	                if (!num.isEmpty()) {
-	                	albNo += num;
-	                }
-	            }
-	        }
+	        String[] albNumber = albHref.attr("href").split("\\D+");
+	        String albNo = "";
+	        for (String no : albNumber) {
+                if (!no.isEmpty()) {
+                	albNo += no;
+                }
+            }
 	        map.put("albNo", albNo); 
 	        
 	        // 곡명 가져오기 ellipsis rank01
