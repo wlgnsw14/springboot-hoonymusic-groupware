@@ -18,7 +18,7 @@ public interface NotiDAO {
 
 	int notiDel(String noti_no);
 
-	void deleteNoti();
+	void deleteScheduledNoti();
 
 
 }

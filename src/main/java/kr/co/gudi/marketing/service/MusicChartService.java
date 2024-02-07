@@ -21,6 +21,7 @@ import kr.co.gudi.marketing.dao.MusicChartDAO;
 public class MusicChartService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired MusicChartDAO dao;
+
 	
 	// url 에 page 라는 parameter 추가해서 document 객체에 저장
 	String url = "https://www.melon.com/chart/index.htm";	

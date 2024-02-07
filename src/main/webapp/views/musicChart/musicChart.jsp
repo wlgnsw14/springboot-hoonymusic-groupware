@@ -29,7 +29,7 @@
         h3{padding-left: 4%; padding-bottom: 2%;}
         .artBtn{margin: 0px 0px 20px 50px; background-color: white;border: 1px solid black;padding: 5px;}
         
-    </style>
+</style>
 <body>
 	<%@ include file="/views/nav.jsp" %>
     <!-- -------------------------------------------list_form start------------------------------------------ -->
@@ -120,7 +120,7 @@ function musicArtistCall(){
 	console.log(artNameArray);  */
 	
  	$.ajax({
-		type:'post',
+		type:'get',
 		url:'musicArtistCall',
 		data:{}, // JSON.stringify({artNameArray:artNameArray}), // JSON 형태로 데이터 보내기 
 		//contentType:'application/json',

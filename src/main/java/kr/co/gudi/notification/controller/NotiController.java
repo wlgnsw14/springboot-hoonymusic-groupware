@@ -1,7 +1,5 @@
 package kr.co.gudi.notification.controller;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -16,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.gudi.member.vo.MemberVO;
 import kr.co.gudi.notification.service.NotiService;
@@ -35,25 +32,25 @@ public class NotiController {
 	@GetMapping(value="/notiList")
 	@ResponseBody
 	public Map<String, Object> notiList(String member_no, HttpSession session){
-		logger.info("member_no === " + member_no);
+		//logger.info("member_no === " + member_no);
 		int depart_no = ((MemberVO)session.getAttribute("loginMember")).getDepart_p_no();
-		logger.info("depart_no === "+depart_no);
+		//logger.info("depart_no === "+depart_no);
 		return service.notiList(member_no, depart_no);
 	}
 	
 	@GetMapping(value="/notiCount")
 	@ResponseBody
 	public Map<String, Object> notiCount(String member_no, HttpSession session){
-		logger.info("member_no === " + member_no);
+		//logger.info("member_no === " + member_no);
 		int depart_no = ((MemberVO)session.getAttribute("loginMember")).getDepart_p_no();
-		logger.info("depart_no === "+depart_no);
+		//logger.info("depart_no === "+depart_no);
 		return service.notiCount(member_no, depart_no);
 	}	
 	
 	
 	@GetMapping(value="/notiStateUpdate")
 	public String notiStateUpdate(String noti_no, String locate){
-		logger.info("unique_no / locate === " + noti_no + " / " + locate);
+		//logger.info("unique_no / locate === " + noti_no + " / " + locate);
 		service.stateUpdate(noti_no, locate);
 		return "redirect:/noti";
 	}
@@ -67,12 +64,12 @@ public class NotiController {
 	}
 	
 	@Scheduled(cron = "0 0 3 * * *")
-	public void deleteNoti() {
-		logger.info("오래된 알림 삭제 완료!");
+	public void deleteScheduledNoti() {
 		try {
-			service.deleteNoti();
+			service.deleteScheduledNoti();
+			logger.info("오래된 알림 삭제 완료!");
 		} catch (Exception e) {
-			
+			logger.info("오래된 알림 삭제 실패! 이유==="+e);
 		}
 	}
 }
