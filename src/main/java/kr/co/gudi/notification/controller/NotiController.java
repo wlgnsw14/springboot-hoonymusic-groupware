@@ -2,6 +2,7 @@ package kr.co.gudi.notification.controller;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import javax.servlet.http.HttpSession;
 
@@ -69,7 +70,11 @@ public class NotiController {
 			service.deleteScheduledNoti();
 			logger.info("오래된 알림 삭제 완료!");
 		} catch (Exception e) {
-			logger.info("오래된 알림 삭제 실패! 이유==="+e);
+			logger.info("오래된 알림 삭제 실패! 에러 내용 === "+e);
 		}
 	}
+	// 8-12일 동안 실행시켜놨더니 아래 같이 로그 출력 
+	// INFO  24-02-11 21:51:02[scheduling-1] [sqltiming:373] - DELETE FROM notification WHERE DATEDIFF(CURDATE(), noti_date) > 7 
+	// {executed in 7 msec}
+	// INFO  24-02-11 21:51:02[scheduling-1] [NotiController:71] - 오래된 알림 삭제 완료!
 }
