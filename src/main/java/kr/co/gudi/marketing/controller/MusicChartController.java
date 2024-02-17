@@ -36,7 +36,7 @@ public class MusicChartController {
 		return service.getChart();
 	}
 	
-	@PostMapping(value="/musicArtistCall")
+	@GetMapping(value="/musicArtistCall")
 	@ResponseBody
 	public List<String> musicArtistCall() throws IOException{
 		// @RequestBody Map<String, List<String>> jsonData

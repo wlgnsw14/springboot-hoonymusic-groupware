@@ -113,7 +113,7 @@ function musicArtistCall(){
 	console.log(artNameArray); 
 	
  	$.ajax({
-		type:'post',
+		type:'get',
 		url:'musicArtistCall',
 		data:JSON.stringify({artNameArray:artNameArray}), // JSON 형태로 데이터 보내기 
 		contentType:'application/json',
