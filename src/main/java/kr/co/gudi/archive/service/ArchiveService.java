@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ public class ArchiveService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired ArchiveDAO dao;
 	Map<String, Object> map = new HashMap<String, Object>();
+	
 	@Value("${spring.servlet.multipart.location}") private String root;
 
 	// 전사, 부서 리스트 출력 (검색 리스트)
@@ -63,6 +65,7 @@ public class ArchiveService {
 		dto.setMember_no(memberNo);
 		dto.setArch_depart(departName);
 		dao.saveDepartArchive(dto);
+		
 		
 		// 방금 저장된 arch_no 가져오기
 		int arch_no = dto.getArch_no();

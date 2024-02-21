@@ -36,8 +36,7 @@ import kr.co.gudi.member.vo.MemberVO;
 public class MemberService implements UserDetailsService{
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired PasswordEncoder encoder;
-	@Autowired
-	private MemberDAO dao;
+	@Autowired private MemberDAO dao;
 	
 	@Value("${spring.servlet.multipart.location}") private String root; //C:/upload/
 	
@@ -103,13 +102,13 @@ public class MemberService implements UserDetailsService{
 	}
 	
 	public void join(HashMap<String, String> params, MultipartFile uploadFile) {
-		logger.info("팀명 : "+params.get("depart_name"));
+		//logger.info("팀명 : "+params.get("depart_name"));
 		String depart_no=dao.getDepartNo(params);
-		logger.info("depart_no : "+depart_no);
+		//logger.info("depart_no : "+depart_no);
 		params.put("depart_no", depart_no);
 		String pain_pw =params.get("pw");
-		String enc_pw = encoder.encode(pain_pw);
-		logger.info("암호화 : "+enc_pw);
+		String enc_pw = encoder.encode(pain_pw); // 비밀번호 암호화 
+		//logger.info("암호화 : "+enc_pw);
 		params.put("pw", enc_pw);
 		dao.join(params);
 		String oriFileName = uploadFile.getOriginalFilename(); // 파일명 추출
